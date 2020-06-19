@@ -1,10 +1,10 @@
-#Contribution Guidelines
+# Contribution Guidelines
 
-- Use git to clone this repository and contributing through [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) (PRs). This online walkthrough will explain how to use Git
-for contributiong to projects.
-Namely, able to make a pull request (PR).
+- Use Git to clone this repository and contributing through [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) (PRs).
+The [online walkthrough written by the CodeRefinery Team](https://coderefinery.github.io/git-intro/) will explain how to use Git for project contributions.
+- **bonus**: [Git can be installed on Rstudio](http://www.geo.uzh.ch/microsite/reproducible_research/post/rr-rstudio-git/), useful for those who use Windows.
 
-- Develop short codes in [RMarkdown](https://guides.github.com/features/mastering-markdown/)
+- Document code through [RMarkdown](https://guides.github.com/features/mastering-markdown/)
 
 - Allow in-building of comments in RMarkdown through [knitr](https://yihui.org/knitr/)
 (no need to save resuilts to file, see recommendation)
@@ -20,14 +20,17 @@ Below some best practice on coding with RMarkdown files (.Rmd)
 Credits: [Daniel Lundin](https://github.com/erikrikarddaniel)
 
 
-#RStudio and RMarkdown
+# RStudio and RMarkdown
 ========================================================
 
-##Good habits
+## Good habits
 ========================================================
 
 - No `setwd()` and *relative* paths
   - Exception: set relative paths to files in this folder
+
+- Keep max. 100 characters per line
+  - **N.B.:** use code indentation!
 
 - Define as *few* tables as possible
 
@@ -42,10 +45,10 @@ Credits: [Daniel Lundin](https://github.com/erikrikarddaniel)
 #Demo: calculating relative abundance on test data
 ========================================================
 
-#Tidyverse Books
+# Tidyverse Books
 ========================================================
 
 - [R for Data Science](https://r4ds.had.co.nz/)
 
-- [Advanced R](https://adv-r.hadley.nz/index.html
+- [Advanced R](https://adv-r.hadley.nz/index.html)
 

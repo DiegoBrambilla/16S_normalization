@@ -1,0 +1,5 @@
+2020-06-04 21:30:13: interleaved.filtered.PHA1.argdb.m8 was made with diamond version 0.8.36
+	Called with parameters: --id 90 --evalue 0.00001 -f 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qcovhsp 
+	Database: arg_db/arg (-rw-r--r-- 1 afranzet interactive 6007849 Apr 17 09:32 arg_db/arg.dmnd)
+	Input files: interleaved.filtered.PHA1.fna (-rw-r--r-- 1 afranzet interactive 5561499968 May  3 19:29 interleaved.filtered.PHA1.fna,)
+2020-06-04 21:35:07: DONE

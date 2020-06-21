@@ -1,0 +1,50 @@
+---
+title: "Demo: how to calculate relative abundance and edit tables"
+author: "Diego Brambilla"
+date: "21/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(tidyverse)
+library(knitr)
+```
+
+As you can see, chunks of text outside of code sections are knit-in as comments
+
+```{r read-data}
+#First, import data. We start from a tab-separated file so "read_tsv" will do the trick
+#Coding with tidyverse is cool because you can forward the output of one step as input
+#to the other step through the pipe ("%>%") symbol. Careful about indentation!
+#N.B.: this comment is knit-in as part of the code
+demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col_integer(), read_identifier = col_character(), descriptor = col_character()))
+```
+
+```{r filtering-relab}
+demo %>%
+#reshape a table into a tibble according to the columns selected through gather() 
+  gather(read_identifier, descriptor, alignmentlength, 2:ncol(.)) %>%
+#sort rows containing unique read identifiers
+  distinct (read_identifier) %>%
+#filter out values in alignmentlength lesser than 25  
+  filter(alignmentlength < 25) %>%
+#split the descriptor into different columns
+  separate(descriptor,
+    c("db_ID", "mrg", "features", "secondary_ID", "phenotype", sep = "|")  %>%
+#drop columns
+  select (-features, -secondary_ID, -phenotype) %>%
+#first step into relative abundance calculation: grouping by the variable of interest
+  group_by(db_ID)
+#second step: create a new column=variable (relab) with mutate() in which
+#you apply the formula
+  mutate(relab = db_ID/sum(db_ID)) %>%
+#ungroup to get back a .tsv tabel from the tibble
+#N.B.: always ungroup() after group_by() !
+  ungroup()
+```
+
+  

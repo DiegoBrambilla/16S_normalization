@@ -39,9 +39,13 @@ demo %>%
   select (-features, -secondary_ID, -phenotype) %>%
 #first step into relative abundance calculation: grouping by the variable of interest
   group_by(db_ID)
-#second step: create a new column=variable (relab) with mutate() in which
+#second step: calculate occurrence through add_tally()
+# pro tip: count() is a short-hand for group_by() + add_tally()
+# add_tally() is short-hand for mutate()
+  add_tally(db_ID, name = "count") %>%
+#third step: create a new column=variable(relab) with mutate() in which
 #you apply the formula
-  mutate(relab = db_ID/sum(db_ID)) %>%
+  mutate(relab = count/sum(count)) %>%
 #ungroup to get back a .tsv tabel from the tibble
 #N.B.: always ungroup() after group_by() !
   ungroup()

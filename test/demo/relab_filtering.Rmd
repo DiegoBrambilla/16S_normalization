@@ -38,7 +38,7 @@ demo %>%
 #drop columns
   select (-features, -secondary_ID, -phenotype) %>%
 #first step into relative abundance calculation: grouping by the variable of interest
-  group_by(db_ID)
+  group_by(db_ID) %>%
 #second step: calculate occurrence through add_tally()
 # pro tip: count() is a short-hand for group_by() + add_tally()
 # add_tally() is short-hand for mutate()

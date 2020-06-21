@@ -1,0 +1,15 @@
+sessionname 16S_normalization
+setenv ROOT $PWD
+# __INSERTPOINT__ This line allows a script to insert new configuration lines here.
+chdir docs
+screen -t docs
+chdir $ROOT/test
+screen -t test
+chdir demos
+screen -t demo
+chdir $ROOT/data
+screen -t data
+chdir $ROOT
+screen -t rstudio
+screen -t man
+screen -t root

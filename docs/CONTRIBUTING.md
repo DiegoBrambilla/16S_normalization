@@ -7,7 +7,7 @@ The [online walkthrough written by the CodeRefinery Team](https://coderefinery.g
 - Document code through [RMarkdown](https://guides.github.com/features/mastering-markdown/)
 
 - Allow in-building of comments in RMarkdown through [knitr](https://yihui.org/knitr/)
-(no need to save resuilts to file, see recommendation)
+(no need to write report of activities, see below)
   - **bonus**: you can build HTML/PDF files with knitr
 
 - Use tydiverse, a meta-library that keeps codes and tables compact 
@@ -21,10 +21,8 @@ Credits: [Daniel Lundin](https://github.com/erikrikarddaniel)
 
 
 # RStudio and RMarkdown
-========================================================
 
 ## Good habits
-========================================================
 
 - No `setwd()` and *relative* paths
   - Exception: set relative paths to files in this folder
@@ -42,11 +40,11 @@ Credits: [Daniel Lundin](https://github.com/erikrikarddaniel)
 
 - (Advanced: Use Make to run scripts that create data files)
 
-#Demo: calculating relative abundance on test data
-========================================================
+# Demo: calculating relative abundance on test data
+
+An example table and R script a have been prepared in [demo](../test/demo), jump to it!
 
 # Tidyverse Books
-========================================================
 
 - [R for Data Science](https://r4ds.had.co.nz/)
 

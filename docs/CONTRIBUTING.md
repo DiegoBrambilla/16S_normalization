@@ -2,13 +2,12 @@
 
 - Use Git to clone this repository and contributing through [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) (PRs).
 The [online walkthrough written by the CodeRefinery Team](https://coderefinery.github.io/git-intro/) will explain how to use Git for project contributions.
-- **bonus**: [Git can be installed on Rstudio](http://www.geo.uzh.ch/microsite/reproducible_research/post/rr-rstudio-git/), useful for those who use Windows.
+  - **bonus**: [Git can be installed on Rstudio](http://www.geo.uzh.ch/microsite/reproducible_research/post/rr-rstudio-git/), useful for those who use Windows.
 
 - Document code through [RMarkdown](https://guides.github.com/features/mastering-markdown/)
 
 - Allow in-building of comments in RMarkdown through [knitr](https://yihui.org/knitr/)
-(no need to write report of activities, see below)
-  - **bonus**: you can build HTML/PDF files with knitr
+  - **bonus**: you can build HTML/PDF files with knitr (no need to write any aditional report of activities)
 
 - Use tydiverse, a meta-library that keeps codes and tables compact 
 (that is, tidy).

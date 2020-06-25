@@ -27,10 +27,13 @@ demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col
 ```{r filtering-relab}
 demo %>%
 #reshape a table into a tibble according to the columns selected through gather() 
+# DL: gather() is deprecated, and pivot_longer() is the replacement (check https://tidyr.tidyverse.org/articles/pivot.html)
   gather(read_identifier, descriptor, alignmentlength, 2:ncol(.)) %>%
 #sort rows containing unique read identifiers
+# DL: Well, it sorts no matter if the field contains duplicates or not...
   distinct (read_identifier) %>%
 #filter out values in alignmentlength lesser than 25  
+# DL: The below actually *keeps* rows that are *shorter* than 25; you probably wanted the opposite!
   filter(alignmentlength < 25) %>%
 #split the descriptor into different columns
   separate(descriptor,
@@ -46,7 +49,10 @@ demo %>%
 #third step: create a new column=variable(relab) with mutate() in which
 #you apply the formula
   mutate(relab = count/sum(count)) %>%
+# DL: I've never used (or seen) the tally() and add_tally() functions so I'm a bit unsure of what you're doing in the above steps.
 #ungroup to get back a .tsv tabel from the tibble
+# DL: No, you're not getting a label back, you're throwing away the grouping information which could, if left, disturb e.g. sorting
+# DL: or new group() operations.
 #N.B.: always ungroup() after group_by() !
   ungroup()
 ```

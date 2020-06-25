@@ -21,7 +21,7 @@ As you can see, chunks of text outside of code sections are knit-in as comments
 #Coding with tidyverse is cool because you can forward the output of one step as input
 #to the other step through the pipe ("%>%") symbol. Careful about indentation!
 #N.B.: this comment is knit-in as part of the code
-demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col_integer(), read_identifier = col_character(), descriptor = col_character()))
+demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col_double(), read_identifier = col_character(), descriptor = col_character()))
 ```
 
 ```{r filtering-relab}

@@ -1,5 +1,5 @@
 ---
-title: "Demo: how to calculate relative abundance and edit tables"
+title: "Demo: how to calculate proportions and edit tables"
 author: "Diego Brambilla"
 date: "21/6/2020"
 output: html_document
@@ -13,48 +13,55 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
 ```
+# Contributors
+- DB: Diego Brambilla
+- DL: Daniel Lundin
 
-As you can see, chunks of text outside of code sections are knit-in as comments
+As you can see, chunks of text outside of code sections are knit-in as markdown comments.
+If you contribute list your name in the contributor's list
 
 ```{r read-data}
 #First, import data. We start from a tab-separated file so "read_tsv" will do the trick
 #Coding with tidyverse is cool because you can forward the output of one step as input
 #to the other step through the pipe ("%>%") symbol. Careful about indentation!
 #N.B.: this comment is knit-in as part of the code
-demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col_integer(), read_identifier = col_character(), descriptor = col_character()))
+demo <- read_tsv('example_annotation_table.tsv', col_types = cols(.default = col_double(), read_identifier = col_character(), descriptor = col_character()))
 ```
 
-```{r filtering-relab}
+```{r filtering-proportion}
 demo %>%
-#reshape a table into a tibble according to the columns selected through gather() 
-# DL: gather() is deprecated, and pivot_longer() is the replacement (check https://tidyr.tidyverse.org/articles/pivot.html)
-  gather(read_identifier, descriptor, alignmentlength, 2:ncol(.)) %>%
-#sort rows containing unique read identifiers
-# DL: Well, it sorts no matter if the field contains duplicates or not...
-  distinct (read_identifier) %>%
-#filter out values in alignmentlength lesser than 25  
-# DL: The below actually *keeps* rows that are *shorter* than 25; you probably wanted the opposite!
-  filter(alignmentlength < 25) %>%
-#split the descriptor into different columns
-  separate(descriptor,
-    c("db_ID", "mrg", "features", "secondary_ID", "phenotype", sep = "|")  %>%
-#drop columns
+  # DB: reshape a table into a tibble according to the columns selected through gather() 
+  # DL: gather() is deprecated, and pivot_longer() is the replacement (check https://tidyr.tidyverse.org/articles/pivot.html)
+  # gather(read_identifier, descriptor, alignmentlength, 2:ncol(.)) %>%
+  # DB: distinct() sorts rows containing unique read identifiers
+  # DL: Well, it sorts no matter if the field contains duplicates or not...
+  # distinct (read_identifier) %>%
+  # DL: Keep only entries longer than 25
+  # DL: The below actually *keeps* rows that are *shorter* than 25; you probably wanted the opposite!
+  # filter(alignmentlength < 25) %>%
+  filter(alignmentlength >= 25) %>%
+  # Split the descriptor into different columns
+  separate(descriptor, c("db_ID", "mrg", "features", "secondary_ID", "phenotype", sep = "|")) %>%
+  # Drop columns
   select (-features, -secondary_ID, -phenotype) %>%
-#first step into relative abundance calculation: grouping by the variable of interest
+  # DL: What you want to calculate is not relative *abundance* but each hit's proportion of the hits for its db_ID.
+  # It's misleading to call this relative abundance, I think, since no measure of abundance in the community is taken into account.
+  # Anyway, here it goes:
+  # first step into relative abundance calculation: grouping by the variable of interest
   group_by(db_ID) %>%
-#second step: calculate occurrence through add_tally()
-# pro tip: count() is a short-hand for group_by() + add_tally()
-# add_tally() is short-hand for mutate()
-  add_tally(db_ID, name = "count") %>%
-#third step: create a new column=variable(relab) with mutate() in which
-#you apply the formula
-  mutate(relab = count/sum(count)) %>%
-# DL: I've never used (or seen) the tally() and add_tally() functions so I'm a bit unsure of what you're doing in the above steps.
-#ungroup to get back a .tsv tabel from the tibble
-# DL: No, you're not getting a label back, you're throwing away the grouping information which could, if left, disturb e.g. sorting
-# DL: or new group() operations.
-#N.B.: always ungroup() after group_by() !
+  # second step: calculate occurrence through add_tally()
+  # pro tip: count() is a short-hand for group_by() + add_tally()
+  # add_tally() is short-hand for mutate()
+  # add_tally(db_ID, name = "count") %>%
+  #third step: create a new column=variable(relab) with mutate() in which
+  #you apply the formula
+  # mutate(relab = count/sum(count)) %>%
+  # DL: I've never used (or seen) the tally() and add_tally() functions so I'm a bit unsure of what you're doing in the above steps.
+  # More straightforward way of calculating relative number of hits since each row is an observation:
+  # Take 1/number of rows in the group:
+  mutate(relab = 1/n()) %>%
+  # N.B.: always ungroup() after group_by() to avoid trouble with group information remaining in the table which affects other group
+  # operations, sorting etc.! 
+  # DL: ungroup() does not get back a .tsv tabel from the tibble.
   ungroup()
 ```
-
-  

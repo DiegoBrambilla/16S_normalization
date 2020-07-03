@@ -1,0 +1,13 @@
+sample	sum_of_n_mapped
+filtered.CER1.pe.bowtie2	5040
+filtered.CER2.pe.bowtie2	7795
+filtered.CER3.pe.bowtie2	5505
+filtered.H2O1.pe.bowtie2	12270
+filtered.H2O2.pe.bowtie2	10346
+filtered.H2O3.pe.bowtie2	14004
+filtered.PET1.pe.bowtie2	8625
+filtered.PET2.pe.bowtie2	1330
+filtered.PET3.pe.bowtie2	5864
+filtered.PHA1.pe.bowtie2	12018
+filtered.PHA2.pe.bowtie2	11427
+filtered.PHA3.pe.bowtie2	11377

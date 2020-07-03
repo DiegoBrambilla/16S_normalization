@@ -1,0 +1,51 @@
+---
+title: "16S_normalization_PHA1"
+author: "Diego Brambilla"
+date: "7/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+```{r read-data, echo=FALSE}
+# Loads default BLOSUM62 alignment table (from BLAST, LAST, DIAMOND, etc.)
+# N.B.: in addition to the default, the column "qcovhsp" has been added and named, confront with your input!
+PHA1 <- read_tsv('interleaved.filtered.PHA1.argdb.m8',col_names = c("read_ID", "db_descriptor", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore", "qcovhsp"), col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character()))
+
+# Length of the reads sequencing protocol
+# Overwrite with your read length protocol
+rlength <- 150
+
+# Length of the 16S rRNA reference gene (default 16S rRNA: 1432)
+genelength16S <- 1432
+
+# Load pivot table containng the sum of overall mapping reads to the 16S rRNA database (GREENGENES 2013)
+reads16S <- read_tsv('../data/pivot.16S.txt', col_types = cols(.default = col_double(), sample = col_character()))
+PHA1_reads16S <- reads16S[[10,2]] 
+
+# Load database file containing the length of the ARGs
+ARGdb <- read_tsv('../data/DeepARG.features.gene.length', col_names = c("db_descriptor", "ARG_length") ) %>%
+                  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|"))  
+```
+
+    This script computes the relative abundance of RGs respect a reference gene. Normally it's using the 16S rRNA.
+
+    relab[RG] = ( ARG-like-reads*rlength/RG-gene-length )/( 16S-reads*rlength/16S-gene-length )
+
+ 
+```{r 16S_relab, echo=FALSE}
+PHA1 %>%
+  filter(length >= 25) %>%
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|")) %>%
+  select (-features, -db, -phenotype) %>%
+  #mutate( 16S_relab = (arg_like_reads)*rlength/arg_length)/(16S-reads)*rlength/16S-length)) )
+  #N.B: the normalized abundance is a sum of all abundances of the ARGs that have the same db_ID
+  head()
+```

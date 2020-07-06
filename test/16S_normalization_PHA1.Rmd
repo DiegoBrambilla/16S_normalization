@@ -25,7 +25,7 @@ PHA1 <- read_tsv(
   ), 
   col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character())
 ) %>%
-  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|"), fill = 'right', extra = 'drop')
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG"), sep = "\\|", fill = 'right', extra = 'drop')
 
 # Length of the reads sequencing protocol
 # Overwrite with your read length protocol
@@ -52,7 +52,7 @@ ARGdb <- read_tsv(
 ) %>%
   # You got warning messages from this one, because there are sometimes more, sometimes less than five fields in db_descriptor.
   # When one really wants to discard this information, one can use extra = 'drop' and fill = 'right'.
-  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|"), fill = 'right', extra = 'drop')  
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG"), sep = "\\|", fill = 'right', extra = 'drop')  
 ```
 
     This script computes the relative abundance of RGs respect a reference gene. Normally it's using the 16S rRNA.
@@ -63,7 +63,13 @@ ARGdb <- read_tsv(
 ```{r 16S_relab, echo=FALSE}
 PHA1 %>%
   filter(length >= 25) %>%
-  select (-features, -db, -phenotype) %>%
+  # DL: Count the number of rows for combinations of db_ID and ARG. This introduces a new column: n.
+  count(db_ID, ARG) %>%
+  # DL: Join in the table with lengths
+  inner_join(ARGdb %>% select(db_ID, ARG_length), by = 'db_ID') %>%
+  # DL: Assuming you want to divide the count by the length use mutate to create count_length_ratio:
+  mutate(count_length_ratio = n/ARG_length)
+
   #mutate( 16S_relab = (arg_like_reads)*rlength/arg_length)/(16S-reads)*rlength/16S-length)) )
   #N.B: the normalized abundance is a sum of all abundances of the ARGs that have the same db_ID
   head()

@@ -17,7 +17,15 @@ library(knitr)
 ```{r read-data, echo=FALSE}
 # Loads default BLOSUM62 alignment table (from BLAST, LAST, DIAMOND, etc.)
 # N.B.: in addition to the default, the column "qcovhsp" has been added and named, confront with your input!
-PHA1 <- read_tsv('interleaved.filtered.PHA1.argdb.m8',col_names = c("read_ID", "db_descriptor", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore", "qcovhsp"), col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character()))
+PHA1 <- read_tsv(
+  'interleaved.filtered.PHA1.argdb.m8',
+  col_names = c(
+    "read_ID", "db_descriptor", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", 
+    "evalue", "bitscore", "qcovhsp"
+  ), 
+  col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character())
+) %>%
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|"), fill = 'right', extra = 'drop')
 
 # Length of the reads sequencing protocol
 # Overwrite with your read length protocol
@@ -55,7 +63,6 @@ ARGdb <- read_tsv(
 ```{r 16S_relab, echo=FALSE}
 PHA1 %>%
   filter(length >= 25) %>%
-  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|")) %>%
   select (-features, -db, -phenotype) %>%
   #mutate( 16S_relab = (arg_like_reads)*rlength/arg_length)/(16S-reads)*rlength/16S-length)) )
   #N.B: the normalized abundance is a sum of all abundances of the ARGs that have the same db_ID

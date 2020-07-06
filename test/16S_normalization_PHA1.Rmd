@@ -14,6 +14,16 @@ library(tidyverse)
 library(knitr)
 ```
 
+```{r constants}
+# Length of the 16S rRNA reference gene (default 16S rRNA: 1432)
+GENE_LENGTH_16S <- 1432
+
+# Length of the reads sequencing protocol
+# Overwrite with your read length protocol
+# DL: This is not needed in the calculation, unless you have different lengths for 16S and ARG sequencing.
+READ_LENGTH <- 150
+```
+
 ```{r read-data, echo=FALSE}
 # Loads default BLOSUM62 alignment table (from BLAST, LAST, DIAMOND, etc.)
 # N.B.: in addition to the default, the column "qcovhsp" has been added and named, confront with your input!
@@ -26,15 +36,6 @@ PHA1 <- read_tsv(
   col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character())
 ) %>%
   separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG"), sep = "\\|", fill = 'right', extra = 'drop')
-
-# Length of the reads sequencing protocol
-# Overwrite with your read length protocol
-# DL: I would put this definition, and the below, in a chunk before this called constants.
-#   Moreover, in programming there's a rule to have constants, i.e. variables that don't change, in capitals.
-rlength <- 150
-
-# Length of the 16S rRNA reference gene (default 16S rRNA: 1432)
-genelength16S <- 1432
 
 # Load pivot table contaning the sum of overall mapping reads to the 16S rRNA database (GREENGENES 2013)
 reads16S <- read_tsv('../data/pivot.16S.txt', col_types = cols(.default = col_double(), sample = col_character()))
@@ -67,10 +68,10 @@ PHA1 %>%
   count(db_ID, ARG) %>%
   # DL: Join in the table with lengths
   inner_join(ARGdb %>% select(db_ID, ARG_length), by = 'db_ID') %>%
-  # DL: Assuming you want to divide the count by the length use mutate to create count_length_ratio:
-  mutate(count_length_ratio = n/ARG_length)
-
-  #mutate( 16S_relab = (arg_like_reads)*rlength/arg_length)/(16S-reads)*rlength/16S-length)) )
-  #N.B: the normalized abundance is a sum of all abundances of the ARGs that have the same db_ID
-  head()
+  # DL: Calculate the normalized_count.
+  # (I've also calculated, nc, in the same way but omitting the redundant inclusion of the read length parameter to show you that you get the same value.)
+  mutate(
+    normalized_count = ( n * READ_LENGTH/ARG_length ) / ( PHA1_reads16S * READ_LENGTH / GENE_LENGTH_16S ),
+    nc = ( n / ARG_length ) / ( PHA1_reads16S / GENE_LENGTH_16S )
+  )
 ```

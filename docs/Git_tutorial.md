@@ -77,9 +77,14 @@ When you will open the R project file, a new R session (process) is started.
    - **N.B.:** this means you no longer need to `getwd()` or `setwd()` to import files in the current project area.
 
 # How to contribute to develop a project with Git
-$ git config --global user.name "Your Name"
-$ git config --global user.email yourname@example.com
+
 ## 0. [Sign up for a GitHub account](https://docs.github.com/en/github/getting-started-with-github/signing-up-for-a-new-github-account)
+
+In addition, let git memorize your username and email:
+```
+git config --global user.name "Your Name"
+git config --global user.email yourname@example.com
+```
 
 ## 1. Open an issue as a change proposal
 

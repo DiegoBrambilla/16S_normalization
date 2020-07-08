@@ -80,12 +80,6 @@ When you will open the R project file, a new R session (process) is started.
 
 ## 0. [Sign up for a GitHub account](https://docs.github.com/en/github/getting-started-with-github/signing-up-for-a-new-github-account)
 
-In addition, let git memorize your username and email:
-```
-git config --global user.name "Your Name"
-git config --global user.email yourname@example.com
-```
-
 ## 1. Open an issue as a change proposal
 
 Go to the [Issue section](https://github.com/DiegoBrambilla/16S_normalization/issues) and open a new “Issue” on the central repository.

@@ -14,25 +14,46 @@ library(tidyverse)
 library(knitr)
 ```
 
-```{r read-data, echo=FALSE}
-# Loads default BLOSUM62 alignment table (from BLAST, LAST, DIAMOND, etc.)
-# N.B.: in addition to the default, the column "qcovhsp" has been added and named, confront with your input!
-PHA1 <- read_tsv('interleaved.filtered.PHA1.argdb.m8',col_names = c("read_ID", "db_descriptor", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore", "qcovhsp"), col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character()))
+```{r constants}
+# Length of the 16S rRNA reference gene (default 16S rRNA: 1432)
+GENE_LENGTH_16S <- 1432
 
 # Length of the reads sequencing protocol
 # Overwrite with your read length protocol
-rlength <- 150
+# DL: This is not needed in the calculation, unless you have different lengths for 16S and ARG sequencing.
+READ_LENGTH <- 150
+```
 
-# Length of the 16S rRNA reference gene (default 16S rRNA: 1432)
-genelength16S <- 1432
+```{r read-data, echo=FALSE}
+# Loads default BLOSUM62 alignment table (from BLAST, LAST, DIAMOND, etc.)
+# N.B.: in addition to the default, the column "qcovhsp" has been added and named, confront with your input!
+PHA1 <- read_tsv(
+  'interleaved.filtered.PHA1.argdb.m8',
+  col_names = c(
+    "read_ID", "db_descriptor", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", 
+    "evalue", "bitscore", "qcovhsp"
+  ), 
+  col_types = cols(.default = col_double(), read_ID = col_character(), db_descriptor = col_character())
+) %>%
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG"), sep = "\\|", fill = 'right', extra = 'drop')
 
-# Load pivot table containng the sum of overall mapping reads to the 16S rRNA database (GREENGENES 2013)
+# Load pivot table contaning the sum of overall mapping reads to the 16S rRNA database (GREENGENES 2013)
 reads16S <- read_tsv('../data/pivot.16S.txt', col_types = cols(.default = col_double(), sample = col_character()))
+
+# DL: This is dangerous, if the input file changes a bit, you'll select the wrong values.
 PHA1_reads16S <- reads16S[[10,2]] 
 
+# Better way:
+PHA1_reads16S <- reads16S %>% filter(sample == 'filtered.PHA1.pe.bowtie2') %>% pull(sum_of_n_mapped)
+
 # Load database file containing the length of the ARGs
-ARGdb <- read_tsv('../data/DeepARG.features.gene.length', col_names = c("db_descriptor", "ARG_length") ) %>%
-                  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|"))  
+ARGdb <- read_tsv(
+  '../data/DeepARG.features.gene.length', col_names = c("db_descriptor", "ARG_length"),
+  col_types = cols(db_descriptor = col_character(), ARG_length = col_integer())
+) %>%
+  # You got warning messages from this one, because there are sometimes more, sometimes less than five fields in db_descriptor.
+  # When one really wants to discard this information, one can use extra = 'drop' and fill = 'right'.
+  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG"), sep = "\\|", fill = 'right', extra = 'drop')  
 ```
 
     This script computes the relative abundance of RGs respect a reference gene. Normally it's using the 16S rRNA.
@@ -43,9 +64,14 @@ ARGdb <- read_tsv('../data/DeepARG.features.gene.length', col_names = c("db_desc
 ```{r 16S_relab, echo=FALSE}
 PHA1 %>%
   filter(length >= 25) %>%
-  separate(db_descriptor, c("db_ID", "features", "db", "phenotype", "ARG", sep = "|")) %>%
-  select (-features, -db, -phenotype) %>%
-  #mutate( 16S_relab = (arg_like_reads)*rlength/arg_length)/(16S-reads)*rlength/16S-length)) )
-  #N.B: the normalized abundance is a sum of all abundances of the ARGs that have the same db_ID
-  head()
+  # DL: Count the number of rows for combinations of db_ID and ARG. This introduces a new column: n.
+  count(db_ID, ARG) %>%
+  # DL: Join in the table with lengths
+  inner_join(ARGdb %>% select(db_ID, ARG_length), by = 'db_ID') %>%
+  # DL: Calculate the normalized_count.
+  # (I've also calculated, nc, in the same way but omitting the redundant inclusion of the read length parameter to show you that you get the same value.)
+  mutate(
+    normalized_count = ( n * READ_LENGTH/ARG_length ) / ( PHA1_reads16S * READ_LENGTH / GENE_LENGTH_16S ),
+    nc = ( n / ARG_length ) / ( PHA1_reads16S / GENE_LENGTH_16S )
+  )
 ```

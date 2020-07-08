@@ -13,6 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
 ```
+# Contributors
+- DB: Diego Brambilla
+- DL: Daniel Lundin
 
 ```{r constants}
 # Length of the 16S rRNA reference gene (default 16S rRNA: 1432)

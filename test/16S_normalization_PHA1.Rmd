@@ -65,7 +65,7 @@ ARGdb <- read_tsv(
 
  
 ```{r 16S_relab, echo=FALSE}
-PHA1 %>%
+PHA1 <- PHA1 %>%
   filter(length >= 25) %>%
   # DL: Count the number of rows for combinations of db_ID and ARG. This introduces a new column: n.
   count(db_ID, ARG) %>%
@@ -77,4 +77,33 @@ PHA1 %>%
     normalized_count = ( n * READ_LENGTH/ARG_length ) / ( PHA1_reads16S * READ_LENGTH / GENE_LENGTH_16S ),
     nc = ( n / ARG_length ) / ( PHA1_reads16S / GENE_LENGTH_16S )
   )
+
 ```
+
+
+```{r pivot_creation, echo=FALSE}
+# Add a new column with info on the sample
+PHA1 <- PHA1 %>%
+  add_column (sample = "PHA1") %>%
+  select (ARG, normalized_count, sample)
+
+# To create an example: modify the ARG column so it's not exactly the same but in a way that can be traced back
+PHA2 <- PHA1 %>% 
+  mutate(ARG = sprintf("ID_%s", ARG)) %>%
+  mutate(sample = sub('PHA1', 'PHA2', sample)) %>%
+# Join the two columns with union()
+  union(PHA1) %>%
+# 
+  pivot_wider(
+    names_from = sample,
+    values_from = normalized_count,
+    values_fill = list (normalized_count = 0),
+    values_fn = length
+# Values are not uniquely identified; output will contain list-cols.
+#* Use `values_fn = list` to suppress this warning.
+#* Use `values_fn = length` to identify where the duplicates arise
+#* Use `values_fn = {summary_fun}` to summarise duplicatesError: Can't convert <double> to <list>.
+    )
+# %>% write_tsv(path = "pivot.16S_normalized.tsv", col_names = TRUE)
+```
+

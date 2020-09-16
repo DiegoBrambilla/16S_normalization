@@ -92,18 +92,24 @@ PHA2 <- PHA1 %>%
   mutate(ARG = sprintf("ID_%s", ARG)) %>%
   mutate(sample = sub('PHA1', 'PHA2', sample)) %>%
 # Join the two columns with union()
+# union() combines all rows from both the tables and **removes duplicate records** from the combined dataset
+# union_all() combines all rows from both the tables **without** removing the duplicate records from the combined dataset
   union(PHA1) %>%
-# 
+# Join the two columns with merge() (all=TRUE -> outer join)
+# merge() two or more data frames as argument with an option all=TRUE as shown below, which finds union of the dataframes in R
+# merge (y=PHA1, by=c("ARG","normalized_count","sample"), all=TRUE) %>%
+
   pivot_wider(
     names_from = sample,
     values_from = normalized_count,
     values_fill = list (normalized_count = 0),
-    values_fn = length
+#    values_fn = length
 # Values are not uniquely identified; output will contain list-cols.
 #* Use `values_fn = list` to suppress this warning.
 #* Use `values_fn = length` to identify where the duplicates arise
 #* Use `values_fn = {summary_fun}` to summarise duplicatesError: Can't convert <double> to <list>.
     )
+# which(duplicated(PHA2))
 # %>% write_tsv(path = "pivot.16S_normalized.tsv", col_names = TRUE)
 ```
 

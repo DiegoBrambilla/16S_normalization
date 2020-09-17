@@ -19,11 +19,13 @@ samples <- unique( sub( '^([^.]+)\\..*', '\\1',basename( Sys.glob(sprintf("%s/*.
 # maybe using map()? how?
 csv_import <- function (x) {
   fread(x , sep = ',', stringsAsFactors = FALSE, header = TRUE, data.table = TRUE, fill = TRUE )
-} 
+}
+
 CER1 <- csv_import("./CER1.csv") %>% add_column (sample = "CER1")
 PHA1 <- csv_import("./PHA1.csv") %>% add_column (sample = "PHA1")
 PET1 <- csv_import("./PET1.csv") %>% add_column (sample = "PET1")
 H2O1 <- csv_import("./H2O1.csv") %>% add_column (sample = "H2O1")
+
 
 #I don't know how to join tables together in a recursive way
 #So I do it manually
@@ -39,11 +41,74 @@ pivot <- CER1 %>%
     values_fill = list (normalized_count = 0)
   )
 
+
+
+filenames <- list.files(path=sprintf("%s", BASE_GLOB), pattern="*.csv", full.names=TRUE, recursive=FALSE)
+samples <- unique( sub( '^([^.]+)\\..*', '\\1',basename( Sys.glob(sprintf("%s/*.csv", BASE_GLOB)))))
+
+for (i in filenames) {
+  for (s in samples) {
+      t <- csv_import(i) %>% add_column(sample = s)
+    print(t)
+  }
+}
+
+
+
+
+
+
+
+
+#check running time:
+#system.time()
+
+
 #Scrapped ideas for recursive file import and save into different objects:
 
-#filenames <- list.files( path = sprintf("%s", BASE_GLOB), pattern="*.csv", full.names=TRUE)
+#fn <- function(filenames) {
+#  out <- matrix(ncol = length(filenames), nrow = seq_along(filenames))
+  
+#  for (f in seq_along(filenames)) {
+#    fdata <- read.table(filenames[f],header=TRUE,sep=",")
+#    out[, f] <- map(fdata, add_column (sample = )
+#                    return(out)
+#  }
+#}
 
-#lapply(filenames, function(x) {read.table(x,header=TRUE,sep=",")})
+
+#for (file in filenames) {
+#  for (sample in samples) {
+#    for (i in seq_along(samples)) {
+#      x <- sample[i]
+#      y <- sample[i+1]
+#      v <- map2(x,y, function(x,y){t <- union(x,y)})
+#    }
+#  }
+#  print(v)
+#}
+
+#files <- list.files( path = sprintf("%s/*.csv", BASE_GLOB), pattern, full.names=TRUE)
+
+#for (f in seq_along(filenames)) {
+#  fdata <- read.csv(filenames[f], header = FALSE)
+#  out[, f] <- map(fdata, function(x){add_column(x, sample = basename( Sys.glob(sprintf("%s/*.csv", BASE_GLOB) ) ) )})
+#}
+#return(out)
+#}
+
+#Use: pivot_all("*.csv") if in same directory of .csv files
+#pivot_all <- function(folder = sprintf("%s", BASE_GLOB), pattern) {
+#list.files is a function that finds files whose names match a pattern
+#we also need to include the “path” portion of the file name. We can do that by using the argument full.names = TRUE
+#files <- list.files( path = folder, pattern, full.names=TRUE)
+#map (files, function(x) {
+#  t <- read.table(x, header=TRUE,sep=",") # load file
+  # apply function
+#  out <- add_column(t , sample = basename( Sys.glob(sprintf("%s/*.csv", BASE_GLOB) ) ) )
+  # write to file
+#  write.table(out, "path/to/output", sep="\t", quote=FALSE, row.names=FALSE, col.names=TRUE)
+#}
 
 #for s in samples {
 #   write(sprintf("*** %s ***", s), stderr())

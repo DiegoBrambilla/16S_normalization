@@ -21,19 +21,15 @@ long <- tibble(fname = Sys.glob("*.csv")) %>%
   unnest(d) %>%
   select(-fname)
 
-pivot2 <- CER1 %>%
-  # Join the two columns with union()
-  # union() combines all rows from both the tables and **removes duplicate records** from the combined dataset
-  # union_all() combines all rows from both the tables **without** removing the duplicate records from the combined dataset
-  union_all(H2O1) %>% union_all(PET1) %>% union_all(PHA1) %>% 
-  pivot_wider(
-    names_from = sample,
-    values_from = normalized_value,
-    values_fill = list (normalized_count = 0)
-  )
-write("***reshaping into pivot/mother table, done***", stderr())
+# Make it wide: genes as rows, samples as columns
+genes2samples <- long %>%
+  pivot_wider(names_from = sample, values_from = normalized_value, values_fill = 0)
 
+# Wide: samples as rows, genes as columns
+samples2genes <- long %>%
+  pivot_wider(names_from = gene, values_from = normalized_value, values_fill = 0)
 
+# I don't know what you're doing below
 filenames <- list.files(path=sprintf("%s", BASE_GLOB), pattern="*.csv", full.names=TRUE, recursive=FALSE)
 samplenames <- unique( sub( '^([^.]+)\\..*', '\\1',basename( Sys.glob(sprintf("%s/*.csv", BASE_GLOB)))))
 csv_import_n_add_sample_column <- function (input, samples) {

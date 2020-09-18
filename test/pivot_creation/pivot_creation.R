@@ -2,38 +2,24 @@
 
 #If you need functions from both plyr and dplyr, please load plyr first, then dplyr
 suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(purrr)) # For map()
+suppressPackageStartupMessages(library(stringr)) # For str_remove()
 suppressPackageStartupMessages(library(data.table))
 
 #setting current directory as environmental variable
+# This is a *constant*, not an environment variable
 BASE_GLOB = '.'
 
-# I don't know how to recursively import csv files and save each into a separate object as part of a for loop
-# So I load them manually
-# maybe using map()? how?
-
-csv_import <- function(x) {
-  fread( x,
-        sep = ',',
-        stringsAsFactors = FALSE,
-        header = TRUE,
-        data.table = TRUE,
-        fill = TRUE
-  )
-}
-
-write("***importing CER1.csv + adding sample column with CER1 as values***", stderr())
-CER1 <- csv_import("./CER1.csv") %>% add_column (sample = "CER1")
-write("***importing PHA1.csv + adding sample column with PHA1 as values***", stderr())
-PHA1 <- csv_import("./PHA1.csv") %>% add_column (sample = "PHA1")
-write("***importing PET1.csv + adding sample column with CER1 as values***", stderr())
-PET1 <- csv_import("./PET1.csv") %>% add_column (sample = "PET1")
-write("***importing H2O1.csv + adding sample column with CER1 as values***", stderr())
-H2O1 <- csv_import("./H2O1.csv") %>% add_column (sample = "H2O1")
-
-
-#I don't know how to join tables together in a recursive way
-#So I do it manually
-#maybe using map()? how?
+# Read all data files into a long table
+long <- tibble(fname = Sys.glob("*.csv")) %>%
+  mutate(
+    d = map(
+      fname,
+      function(f) read_csv(f, col_types = cols(gene = col_character(), normalized_value = col_double())) %>% mutate(sample = str_remove(f, '\\.csv'))
+    )
+  ) %>%
+  unnest(d) %>%
+  select(-fname)
 
 pivot2 <- CER1 %>%
   # Join the two columns with union()

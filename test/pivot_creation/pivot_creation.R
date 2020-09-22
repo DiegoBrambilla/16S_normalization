@@ -51,6 +51,8 @@ write("***reshaping into pivot/mother table, done***", stderr())
 filenames <- list.files(path=sprintf("%s", BASE_GLOB), pattern="*.csv", full.names=TRUE, recursive=FALSE)
 samplenames <- unique( sub( '^([^.]+)\\..*', '\\1',basename( Sys.glob(sprintf("%s/*.csv", BASE_GLOB)))))
 csv_import_n_add_sample_column <- function (input, samples) {
+#check if the number of input files is equal to the number of samples, if not it stops
+  stopifnot(length(input) == length(samples))
   write(sprintf("***importing %s.csv and adding sample column with %s as values ***", input, samples), stderr())
   data <- fread(
     input ,
@@ -73,8 +75,8 @@ pivot<- ldply(
   function(x) rbind(x, fill = TRUE)
 ) %>%
 pivot_wider(
-  names_from = sample,
-  values_from = normalized_value,
+  names_from = sample, #improvement: use conditional select to fetch column (as.chr)
+  values_from = normalized_value, #improvement: use conditional select to fetch column (as.dbl)
   values_fill = list (normalized_count = 0)
 )
 write("***reshaping into pivot/mother table, done***", stderr())

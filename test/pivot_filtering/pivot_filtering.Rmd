@@ -32,11 +32,12 @@ pivot_family <- read_excel(
                names_to= "family",
                values_to= "relab") %>%
 #Filter out all variables that contain "noname" (unclassified taxa)
-  filter(!grepl(".*noname*", family)) %>%
+#Actually we like nonames because you can still say they belong to the Phylum we are looking for
+# filter(!grepl(".*noname*", family)) %>%
 #Filter out all variables that contain "unclassified" (unclassified taxa)
   filter(!grepl(".*unclassified*", family)) %>%
 #Filter out selected variables (Archaea, Eukarya and Viruses families)
-    filter(!family %in% c("Baculoviridae", "Eimeriidae", "Methanobacteriaceae", "Methanoregulaceae", "Methanosaetaceae", "Methanosarcinaceae" , "Methanospirillaceae", "Myoviridae" , "Nitrosopumilaceae", "Podoviridae", "Potyviridae", "Siphoviridae")) %>% 
+    filter(!family %in% c("Baculoviridae", "Eimeriidae", "Methanobacteriaceae", "Methanoregulaceae", "Methanosaetaceae", "Methanosarcinaceae" , "Methanospirillaceae", "Myoviridae" , "Nitrosopumilaceae", "Podoviridae", "Potyviridae", "Siphoviridae", "Viruses_noname")) %>% 
 #Re-calculate relative abundance  
   group_by(Category) %>%
   mutate(relab = relab/sum(relab) * 100) %>%
@@ -63,11 +64,12 @@ pivot_genus <- read_excel(
                names_to= "genus",
                values_to= "relab") %>%
 #Filter out all variables that contain "noname" (unclassified taxa)
-  filter(!grepl(".*noname*", genus)) %>%
+#Actually we like nonames because you can still say they belong to the Phylum we are looking for
+# filter(!grepl(".*noname*", genus)) %>%
 #Filter out all variables that contain "unclassified" (unclassified taxa)
   filter(!grepl(".*unclassified*", genus)) %>%  
 #Filter out selected variables (Archaea, Eukarya and Viruses genera)
-    filter(!genus %in% c("Alphabaculovirus", "Bppunalikevirus", "C2likevirus" , "Candidatus_Nitrosoarchaeum" , "Eimeria", "I3likevirus", "Methanobacterium", "Methanobrevibacter", "Methanomethylovorans", "Methanoregulaceae_unclassified", "Methanosaeta", "Methanosarcina", "Methanospirillum" ,"Nitrosopumilaceae_unclassified" , "Nitrosopumilus", "Potyvirus", "Yualikevirus")) %>%
+    filter(!genus %in% c("Alphabaculovirus", "Bppunalikevirus", "C2likevirus" , "Candidatus_Nitrosoarchaeum" , "Eimeria", "I3likevirus", "Methanobacterium", "Methanobrevibacter", "Methanomethylovorans", "Methanoregulaceae_unclassified", "Methanosaeta", "Methanosarcina", "Methanospirillum" ,"Nitrosopumilaceae_unclassified" , "Nitrosopumilus", "Potyvirus", "Viruses_noname", "Yualikevirus")) %>%
 #Re-calculate relative abundance  
   group_by(Category) %>%
   mutate(relab = relab/sum(relab) * 100) %>%

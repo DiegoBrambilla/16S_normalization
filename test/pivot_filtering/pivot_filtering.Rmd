@@ -23,10 +23,14 @@ library(openxlsx)
 BASE_GLOB = '.'
 
 #importing excel spreadsheet data
-pivot_family <- read_excel(
-  'LakeVarese_MetaPhlAn_family_scaling.xlsx',
-  col_names = TRUE 
-  ) %>%
+pivot_family <- read_csv(
+  'LakeVarese_MetaPhlAn_family_scaling.csv',
+  col_names = TRUE,
+  col_types =cols(
+    .default = col_double(),
+    Category = col_character()
+  )
+) %>%
 #Turn the table long (placing the scaled value in a column called "relab")
   pivot_longer(-Category,
                names_to= "family",
@@ -55,10 +59,14 @@ pivot_family <- read_excel(
 ```{r filter-genus, echo=FALSE}
 
 #importing excel spreadsheet data
-pivot_genus <- read_excel(
-  'LakeVarese_MetaPhlAn_genus_scaling.xlsx',
-  col_names = TRUE 
-  ) %>%
+pivot_genus <- read_csv(
+  'LakeVarese_MetaPhlAn_genus_scaling.csv',
+  col_names = TRUE,
+  col_types =cols(
+    .default = col_double(),
+    Category = col_character()
+  )
+)%>%
 #Turn the table long (placing the scaled value in a column called "relab")
   pivot_longer(-Category,
                names_to= "genus",
@@ -69,7 +77,7 @@ pivot_genus <- read_excel(
 #Filter out all variables that contain "unclassified" (unclassified taxa)
   filter(!grepl(".*unclassified*", genus)) %>%  
 #Filter out selected variables (Archaea, Eukarya and Viruses genera)
-    filter(!genus %in% c("Alphabaculovirus", "Bppunalikevirus", "C2likevirus" , "Candidatus_Nitrosoarchaeum" , "Eimeria", "I3likevirus", "Methanobacterium", "Methanobrevibacter", "Methanomethylovorans", "Methanoregulaceae_unclassified", "Methanosaeta", "Methanosarcina", "Methanospirillum" ,"Nitrosopumilaceae_unclassified" , "Nitrosopumilus", "Potyvirus", "Viruses_noname", "Yualikevirus")) %>%
+    filter(!genus %in% c("Alphabaculovirus", "Alphacryptovirus", "Bppunalikevirus", "C2likevirus" , "Candidatus_Nitrosoarchaeum" , "Eimeria", "I3likevirus", "Methanobacterium", "Methanobrevibacter", "Methanomethylovorans", "Methanoregulaceae_unclassified", "Methanosaeta", "Methanosarcina", "Methanospirillum" ,"Nitrosopumilaceae_unclassified" , "Nitrosopumilus", "Potyvirus", "Viruses_noname", "Yualikevirus")) %>%
 #Re-calculate relative abundance  
   group_by(Category) %>%
   mutate(relab = relab/sum(relab) * 100) %>%

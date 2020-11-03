@@ -41,7 +41,7 @@ pivot_family <- read_csv(
 #Filter out all variables that contain "unclassified" (unclassified taxa)
   filter(!grepl(".*unclassified*", family)) %>%
 #Filter out selected variables (Archaea, Eukarya and Viruses families)
-    filter(!family %in% c("Baculoviridae", "Eimeriidae", "Methanobacteriaceae", "Methanoregulaceae", "Methanosaetaceae", "Methanosarcinaceae" , "Methanospirillaceae", "Myoviridae" , "Nitrosopumilaceae", "Podoviridae", "Potyviridae", "Siphoviridae", "Viruses_noname")) %>% 
+    filter(!family %in% c("Baculoviridae", "Eimeriidae", "Methanobacteriaceae", "Methanoregulaceae", "Methanosaetaceae", "Methanosarcinaceae" , "Methanospirillaceae", "Myoviridae" , "Nitrosopumilaceae", "Partitiviridae", "Podoviridae", "Potyviridae", "Siphoviridae", "Viruses_noname")) %>% 
 #Re-calculate relative abundance  
   group_by(Category) %>%
   mutate(relab = relab/sum(relab) * 100) %>%
